@@ -8,7 +8,7 @@ package Catalogo;
  *
  * @author jprod
  */
-public class Producto {
+public class Producto implements Cloneable{
     private String codigo; // único visible al usuario
     private String nombre;
     private double precio;
@@ -33,7 +33,14 @@ public class Producto {
         this.stock = stock;
         this.categoria = categoria;
     }
-
+ 
+    public Producto clone(){
+           try {
+        return (Producto) super.clone();
+    } catch (CloneNotSupportedException e) {
+        throw new RuntimeException("Error al clonar el producto", e);
+    }
+    }
     @Override
     public String toString() {
         return "Producto{" + "codigo=" + codigo + ", nombre=" + nombre + ", precio=" + precio + ", stock=" + stock + ", categoria=" + categoria + '}';
