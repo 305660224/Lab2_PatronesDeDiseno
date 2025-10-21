@@ -4,6 +4,8 @@
  */
 package Notificaciones;
 
+import java.util.HashMap;
+import java.util.Map;
 import Facturacion.Factura;
 import Notificaciones.Notificacion;
 import java.util.ArrayList;
@@ -16,6 +18,7 @@ import java.util.List;
 public class ServicioNotificaciones {
     private int seq = 1;
     private final List<Notificacion> historial;
+    private final Map<CanalNotificacion, EnviarStrategy> estrategias;
 
     /**
      * Iterator
@@ -24,7 +27,12 @@ public class ServicioNotificaciones {
     public List<Notificacion> getHistorial(){ return historial; }
 
     public ServicioNotificaciones() {
+        estrategias = new HashMap<>();
         historial = new ArrayList<>();
+        estrategias.put(CanalNotificacion.PANTALLA, new PantallaStrategy());
+        estrategias.put(CanalNotificacion.SMS, new SMSStrategy());
+        estrategias.put(CanalNotificacion.WHATSAPP, new WhatsappStrategy());
+        estrategias.put(CanalNotificacion.EMAIL, new EmailStrategy());
     }
 
     /**
@@ -36,11 +44,9 @@ public class ServicioNotificaciones {
     public Notificacion enviar(Factura factura, CanalNotificacion canal){
         Notificacion n = new Notificacion(seq++, factura, canal);
         try {
-            switch (canal){
-                case EMAIL -> System.out.println("[EMAIL] Enviando a " + factura.getCliente().getEmail());
-                case SMS -> System.out.println("[SMS] Enviando a " + factura.getCliente().getTelefono());
-                case WHATSAPP -> System.out.println("[WA] Enviando a " + factura.getCliente().getTelefono());
-                case PANTALLA -> System.out.println("[POPUP] Factura #" + factura.getNumero());
+            if (estrategias != null) {
+            EnviarStrategy estrategia = estrategias.get(canal);
+            estrategia.Enviar(factura);
             }
             n.setEstado(EstadoNotificacion.ENVIADA);
         } catch (Exception e){
